@@ -35,3 +35,7 @@ mvn install:install-file -Dfile=lib\jsch-0.1.32.jar -DgroupId=jsch -DartifactId=
 There is a timing nature to Expect, and hence the tests have hard coded delays to simulate the passing of time. This slows down the tests a little.
 
  * mvn test
+
+To skip tests during a build:
+
+ * mvn -Dmaven.skip.tests package
