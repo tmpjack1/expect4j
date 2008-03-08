@@ -1,0 +1,5 @@
+#summary System requirements for using expect4j
+
+= System Requirements =
+
+ * JDK 1.4 or higher
