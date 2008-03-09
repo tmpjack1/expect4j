@@ -3,8 +3,6 @@
  *
  * Created on March 13, 2007, 6:06 PM
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package expect4j;
@@ -13,7 +11,8 @@ import java.io.*;
 import java.util.logging.*;
 
 /**
- *
+ * Fake the processing of stream, by adding delays.
+ * 
  * @author justin
  */
 public class DelayedPair implements IOPair {

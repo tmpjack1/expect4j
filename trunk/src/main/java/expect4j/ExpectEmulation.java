@@ -22,6 +22,7 @@ import expect4j.matches.*;
 import org.apache.oro.text.regex.MalformedPatternException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Register commands to support the Expect API
@@ -47,8 +48,9 @@ import java.util.logging.Level;
  * spawn_id
  */
 public class ExpectEmulation extends Extension {
-    static final public java.util.logging.Logger log = java.util.logging.Logger.getLogger(ExpectEmulation.class.getName());
+    static final public Logger log = Logger.getLogger(ExpectEmulation.class.getName());
     
+    //@Overrides
     public void init(Interp interp) {
         interp.createCommand("exp_continue", new ExpContinueCommand());
         interp.createCommand("exp_internal", new ExpInternalCommand());
@@ -406,7 +408,7 @@ public class ExpectEmulation extends Extension {
                     log.finer("Username: " + username);
                 
                 if( i >= argv.length )
-                    throw new TclNumArgsException(interp, i - 1, argv, "[-l username] hostname");
+                    throw new TclNumArgsException(interp, i - 1, argv, "[-l username] [-P password] hostname");
                 String hostname = argv[i].toString().trim();
                 
                 try {
@@ -441,8 +443,42 @@ public class ExpectEmulation extends Extension {
                 }catch(Exception e) {
                     throw new TclException(interp, "Unable to connect using Telnet");
                 }
-            } else
-                throw new TclException(interp, "Only ssh or telnet is supported at this time");
+            } else {
+                // Unsupported
+                String[] cmdarray;
+                int cmdidx = 0;
+                int addlargs = argv.length - i + 1; 
+                
+                // Guess OS
+                String OS = System.getProperty("os.name").toLowerCase();
+                if (OS.indexOf("windows 9") > -1) {
+                    // Windows 98
+                    cmdarray = new String[ addlargs + 2];
+                    cmdarray[cmdidx++] = "command.com";
+                    cmdarray[cmdidx++] = "/c";
+                } else if ( OS.indexOf("windows") > -1 ) {
+                    // NT
+                    cmdarray = new String[ addlargs + 2];
+                    cmdarray[cmdidx++] = "cmd.exe";
+                    cmdarray[cmdidx++] = "/c";
+                } else {
+                    // Unix
+                    cmdarray = new String[ addlargs];
+                }
+                
+                // Append actual command and its args
+                cmdarray[cmdidx++] = program;
+                for(;i < argv.length; i++) {
+                    cmdarray[cmdidx++] = argv[i].toString().trim();
+                }
+                
+                try {
+                    Process process = Runtime.getRuntime().exec(cmdarray);
+                    expect4j = new Expect4j(process);
+                }catch(Exception e) {
+                    throw new TclException(interp, "Unable to start arbitary process");
+                }
+            }
             
             // Load and store lastSpawnId
             int nextId = 1;

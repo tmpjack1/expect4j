@@ -10,9 +10,7 @@ package expect4j;
 import junit.framework.*;
 import expect4j.matches.*;
 import java.io.*;
-import java.net.Socket;
 import java.util.*;
-import org.apache.oro.text.GlobCompiler;
 import org.apache.oro.text.regex.*;
 
 /**
@@ -203,6 +201,12 @@ public class Expect4jTest extends TestCase {
         assertEquals(Expect4j.RET_EOF, index );
         
     }
+    
+    /**
+     * Grab multiple blocks and then grab until EOF
+     * 
+     * @throws java.lang.Exception
+     */
     public void testEofMultiple() throws Exception {
         Expect4j.log.info("\n\n\n\nexpect eof multiple");
         
@@ -232,9 +236,10 @@ public class Expect4jTest extends TestCase {
         int index = instance.expect(pairs);
         assertEquals(3, index );
         
-        ExpectState state = instance.getLastState(); // From EOF
+        ExpectState state = instance.getLastState(); // From last match to EOF
         String buffer = state.getBuffer();
         String expResult = " the lazy dog";
+        Expect4j.log.info("EOF leftovers " + buffer);
         assertEquals(expResult, buffer);
     }
     
