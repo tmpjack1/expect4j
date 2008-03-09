@@ -61,11 +61,20 @@ public class Expect4j {
     /**
      * Creates a new instance of Expect4j based on a Socket
      */
-    public Expect4j(Socket socket) throws Exception {
+    public Expect4j(Socket socket) throws IOException {
         this(socket.getInputStream(), socket.getOutputStream());
     }
-    public Expect4j(InputStream is, OutputStream os) throws Exception {
+    
+    public Expect4j(InputStream is, OutputStream os) {
         this( new StreamPair(is, os) );
+    }
+    
+    /**
+     * process = Runtime.getRuntime().exec( cmdArgs );
+     * @param process
+     */
+    public Expect4j(Process process) {
+        this( process.getInputStream(), process.getOutputStream() );
     }
     
     /** Class has had core variables set yet. */
@@ -160,9 +169,10 @@ public class Expect4j {
      * simulates expect { }
      *
      * A pair is a pattern and a closure
+     * 
+     * @returns index that was last matched or a RET_ error code
      */
     public int expect(final List /* <Match> */ pairs) throws Exception { // from Closure
-        String matchedText = null;
         
         // Buckets
         EofMatch eofMatch = null;
@@ -245,9 +255,9 @@ public class Expect4j {
                     consumer.resume(matchedWhere + matchedLength);
                     
                     // find index to return
-                    PatternPair pair = (PatternPair) patternMatches.get( g_state.getPairIndex() );
-                    log.finer("Pair found " + pair.getPattern().getPattern() );
-                    index = pairs.indexOf( pair );
+                    PatternPair singlepair = (PatternPair) patternMatches.get( g_state.getPairIndex() );
+                    log.finer("Pair found " + singlepair.getPattern().getPattern() );
+                    index = pairs.indexOf( singlepair );
                     log.finer("Index found " + index);
                     
                     if( !g_state.shouldContinue() ) {

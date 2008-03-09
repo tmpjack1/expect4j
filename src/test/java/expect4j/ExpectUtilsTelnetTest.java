@@ -65,7 +65,7 @@ public class ExpectUtilsTelnetTest extends TestCase {
             }),
             new RegExpMatch("@" + hostname + "\\]", new Closure() {
                 public void run(ExpectState state) {
-                    expect.log.warning("Holy crap, this actually worked");
+                    Expect4j.log.warning("Holy crap, this actually worked");
                     state.addVar("sentExit", Boolean.TRUE);
                     try { expect.send("exit\r"); } catch(Exception e) { }
                 }
@@ -81,7 +81,7 @@ public class ExpectUtilsTelnetTest extends TestCase {
             */
             new TimeoutMatch(new Closure() {
                 public void run(ExpectState state) {
-                    expect.log.warning(":-( Timeout");
+                    Expect4j.log.warning(":-( Timeout");
                 }
             })
         });

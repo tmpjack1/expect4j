@@ -19,9 +19,6 @@ package expect4j;
 import com.jcraft.jsch.*;
 import java.io.*;
 import java.net.Socket;
-import java.io.File;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Hashtable;
 import expect4j.matches.*;
 import java.util.logging.*;
@@ -45,31 +42,7 @@ public abstract class ExpectUtils {
         Socket s = null;
         s = new Socket(remotehost, 80);
         log.fine("Connected to " + s.getInetAddress().toString() );
-        /*
-        Reader reader = null;
-        Writer writer = null;
-         
-        reader = new InputStreamReader(s.getInputStream());
-        writer = new OutputStreamWriter(s.getOutputStream());
-         
-        log.fine("Writing url");
-        writer.write("GET http://" + remotehost + url + "\r\n\r\n");
-        writer.flush();
-         
-        log.fine("Looking for feedback");
-        char response[] = new char[256];
-        int length = 0;
-        while ( (length = reader.read(response,0,255)) != -1 ) {
-            String line = new String(response,0,length);
-            log.fine("Server: >" + line + "<");
-        }
-         
-        reader.close();
-        writer.close();
-        s.close();
-         
-        if( true ) return "";
-         */
+
         Expect4j expect = new Expect4j(s);
         
         expect.send("GET " + url + " HTTP 1.1\r\n");
@@ -243,10 +216,7 @@ public abstract class ExpectUtils {
         String[] cmdArgs = cmdLine.split(" ");
         Process process = Runtime.getRuntime().exec( cmdArgs );
         
-        InputStream is = process.getInputStream();
-        OutputStream os = process.getOutputStream();
-        StreamPair iopair = new StreamPair(is, os);
-        Expect4j expect = new Expect4j( iopair );
+        Expect4j expect = new Expect4j( process );
         
         return expect;
     }
